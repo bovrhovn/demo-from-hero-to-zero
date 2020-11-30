@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Models;
 using Web.Helpers;
 using Web.Interfaces;
 using Web.Models;
@@ -15,15 +17,15 @@ namespace Web.Pages.Send
     public class CardPageModel : PageModel
     {
         private readonly ILogger<CardPageModel> logger;
-        private readonly ICardSenderService cardSenderService;
+        private readonly ICardService cardService;
         private readonly IStorageWorker storageWorker;
 
         public CardPageModel(ILogger<CardPageModel> logger,
-            ICardSenderService cardSenderService,
+            ICardService cardService,
             IStorageWorker storageWorker)
         {
             this.logger = logger;
-            this.cardSenderService = cardSenderService;
+            this.cardService = cardService;
             this.storageWorker = storageWorker;
         }
 
@@ -53,7 +55,7 @@ namespace Web.Pages.Send
             }
 
             var name = StringHelpers.RandomString(8);
-            await cardSenderService.SendCardAsync(name, CardModel);
+            await cardService.SendCardAsync(name, CardModel);
 
             logger.LogInformation("Card sent");
             InfoText = $"Card with name {name} has been sent at {DateTime.Now}";

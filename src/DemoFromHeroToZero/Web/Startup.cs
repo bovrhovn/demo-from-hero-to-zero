@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Services;
 using Web.Hubs;
 using Web.Interfaces;
 using Web.Options;
@@ -26,7 +28,7 @@ namespace Web
         {
             services.Configure<StorageOptions>(Configuration.GetSection("StorageOptions"));
 
-            services.AddScoped<ICardSenderService, CardSenderService>();
+            services.AddScoped<ICardService, CardService>();
             var storageSettings = Configuration.GetSection("StorageOptions").Get<StorageOptions>();
             services.AddScoped<IStorageWorker, AzureStorageWorker>(_ =>
                 new AzureStorageWorker(storageSettings.ConnectionString, storageSettings.Container));

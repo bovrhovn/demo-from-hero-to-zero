@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Web.Models;
+using Models;
 
 namespace Web.Interfaces
 {
-    public interface ICardSenderService
+    public interface ICardService
     {
         Task<bool> SendCardAsync(string nameOfCard, SendCardModel objectVersionOfCard);
     }

@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Interfaces;
 using Microsoft.WindowsAzure.Storage;
-using Web.Interfaces;
 
-namespace Web.Services
+namespace Services
 {
     public class AzureStorageWorker : IStorageWorker
     {

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Web.Interfaces
+namespace Interfaces
 {
     public interface IStorageWorker
     {
