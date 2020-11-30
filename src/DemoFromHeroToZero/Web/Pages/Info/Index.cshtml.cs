@@ -11,6 +11,7 @@ namespace Web.Pages.Info
 
         public void OnGet()
         {
+            logger.LogInformation("Info page loaded");
         }
     }
 }
