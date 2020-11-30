@@ -50,7 +50,7 @@ namespace Functions
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(replaced));
             await storageWorker.UploadFileAsync(name, stream, "sent");
 
-            var cardPublicUrl = await storageWorker.GetFileUrl(name, false);
+            var cardPublicUrl = await storageWorker.GetFileUrl(name, "cards", false);
 
             var emailMessage = new EmailModel
             {
@@ -61,17 +61,19 @@ namespace Functions
             };
             var emailToBeSent = JsonConvert.SerializeObject(emailMessage);
             await emails.AddMessageAsync(new CloudQueueMessage(emailToBeSent));
+            log.LogInformation("Email sent, processing event grid");
             
             //SENT info to all subscribers to EventGrid
             string publisherMessage = $"We generated card and send email with this link {cardPublicUrl}";
             await SentInfoToEventGrid(publisherMessage, log);
+            log.LogInformation("Finished sending");
         }
 
         private async Task SentInfoToEventGrid(string message, ILogger log)
         {
             string topicEndpoint = Environment.GetEnvironmentVariable("EventGridTopicEndpoint",
                 EnvironmentVariableTarget.Process);
-            string key = Environment.GetEnvironmentVariable("EventGridTopicKey", 
+            string key = Environment.GetEnvironmentVariable("EventGridTopicKey",
                 EnvironmentVariableTarget.Process);
 
             var list = new List<Event>();
@@ -80,8 +82,8 @@ namespace Functions
             list.Add(currentData);
             var report = JsonConvert.SerializeObject(list);
 
-            log.LogInformation("Sending message to " + topicEndpoint);
-            
+            log.LogInformation($"Sending message to {topicEndpoint}");
+
             var content = new StringContent(report);
 
             var request = new HttpRequestMessage
@@ -94,7 +96,8 @@ namespace Functions
             request.Headers.Add("aeg-sas-key", key);
 
             var response = await httpClient.SendAsync(request);
-            log.LogInformation("Message has been sent. Awaiting result - status code: " + response.IsSuccessStatusCode);
+            log.LogInformation($"Message has been sent. Awaiting result - status code: {response.IsSuccessStatusCode}");
+            
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();

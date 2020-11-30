@@ -58,9 +58,8 @@ namespace Web.Controllers
 
             foreach (var eventGridEvent in eventGridEvents)
             {
-                var sasUrl = eventGridEvent.Data as JObject;
-                var imageUrl = sasUrl?["imgurl"]?.ToString();
-                await hubContext.Clients.All.SendAsync("alertMessage", imageUrl);
+                var sasUrl = eventGridEvent.Subject;
+                await hubContext.Clients.All.SendAsync("alertMessage", sasUrl);
             }
 
             return Ok($"Data was received at {DateTime.Now} and all clients has been notified.");

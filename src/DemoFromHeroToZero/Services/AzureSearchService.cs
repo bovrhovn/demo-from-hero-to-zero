@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents;
+using Azure.Search.Documents.Models;
 using Interfaces;
 using Models;
 using Newtonsoft.Json;
@@ -25,13 +26,13 @@ namespace Services
         {
             var options = new SearchOptions
             {
-                Filter = "",
+                SearchMode = SearchMode.Any,
                 IncludeTotalCount = true
             };
 
             var list = new List<SearchResult>();
 
-            var response = await searchClient.SearchAsync<SearchModel>(query + "*", options);
+            var response = await searchClient.SearchAsync<SearchModel>(query, options);
 
             foreach (var currentModel in response.Value.GetResults())
             {

@@ -37,8 +37,7 @@ namespace Web.Pages.Info
                 var results = await searchService.SearchAsync(Query);
                 foreach (var searchResult in results)
                 {
-                    searchResult.MoreInfo =
-                        await storageWorker.GetFileUrl(searchResult.Name, options.CardsContainer, false);
+                    searchResult.MoreInfo = "https://cards.vrhovnik.net"; //TODO: change to redirector
                     Results.Add(searchResult);
                 }
 
