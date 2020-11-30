@@ -1,10 +1,75 @@
 @page
-@model Web.Pages.Info.Search
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@model SearchPageModel
 
 @{
     ViewData["Title"] = "Searching through cards";
 }
 
 <h1>
-    
+    Search through cards
 </h1>
+
+<p>
+    Search through cards on below form
+</p>
+
+<form>
+    <div class="form-row align-items-center">
+        <div class="col-sm-6">
+            <label class="sr-only"
+                   for="inlineFormInputGroupUsername">
+                Text
+            </label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <i class="fab fa-searchengin"></i>
+                    </div>
+                    <input asp-for="Query"
+                           class="form-control"
+                           id="inlineFormInputGroupUsername"
+                           placeholder="enter text"
+                           type="text">
+                </div>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary"
+                        type="submit">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (Model.Results.Any())
+{
+    <table class="table table-info">
+        <tr>
+            <td>
+                Name
+            </td>
+            <td>
+                Description
+            </td>
+            <td>Link</td>
+        </tr>
+        @foreach (var result in Model.Results)
+        {
+            <tr>
+                <td>@result.Name</td>
+                <td>@result.Description</td>
+                <td>
+                    <a href="@result.MoreInfo">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No data is present.</p>
+}

@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Interfaces;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Services
 {
@@ -31,6 +34,18 @@ namespace Services
             
             if (await IsValidAsync(name))
                 return $"{storageAccount.BlobEndpoint.AbsoluteUri}{Container}/{name}";
+            
+            return string.Empty;
+        }
+
+        public async Task<string> GetFileUrl(string name, string containerName, bool validate)
+        {
+            if (string.IsNullOrEmpty(name)) return string.Empty;
+            
+            if (!validate) return $"{storageAccount.BlobEndpoint.AbsoluteUri}{containerName}/{name}";
+            
+            if (await IsValidAsync(name))
+                return $"{storageAccount.BlobEndpoint.AbsoluteUri}{containerName}/{name}";
             
             return string.Empty;
         }
@@ -154,6 +169,38 @@ namespace Services
                 Debug.WriteLine(e.Message);
                 return string.Empty;
             }
+        }
+
+        public async Task<List<string>> GetListInContainerAsync(string name)
+        {
+            var list = new List<string>();
+            try
+            {
+                var blobClient = storageAccount.CreateCloudBlobClient();
+
+                var container = blobClient.GetContainerReference(name);
+
+                BlobContinuationToken continuationToken = null;
+
+                do
+                {
+                    var resultSegment = await container.ListBlobsSegmentedAsync(string.Empty,
+                        true, BlobListingDetails.Metadata, 5000, continuationToken, null, null);
+
+                    list.AddRange(from CloudBlob blob in resultSegment.Results select blob.Name);
+
+                    continuationToken = resultSegment.ContinuationToken;
+
+                } while (continuationToken != null);
+
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return null;
+            }
+
+            return list;
         }
     }
 }

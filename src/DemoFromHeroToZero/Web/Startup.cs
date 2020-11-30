@@ -27,11 +27,18 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<StorageOptions>(Configuration.GetSection("StorageOptions"));
+            services.Configure<SearchOptions>(Configuration.GetSection("SearchOptions"));
 
             services.AddScoped<ICardService, CardService>();
+
+            var searchSettings = Configuration.GetSection("SearchOptions").Get<SearchOptions>();
+            services.AddScoped<ISearchService, AzureSearchService>(_ =>
+                new AzureSearchService(searchSettings.SearchName, searchSettings.SearchKey, searchSettings.Index));
+
             var storageSettings = Configuration.GetSection("StorageOptions").Get<StorageOptions>();
             services.AddScoped<IStorageWorker, AzureStorageWorker>(_ =>
                 new AzureStorageWorker(storageSettings.ConnectionString, storageSettings.Container));
+
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();

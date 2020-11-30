@@ -8,3 +8,36 @@
 <h1>
     Report overview
 </h1>
+
+<p>
+    Below you will find short overview, what was sent with links
+</p>
+
+@if (Model.Reports.Any())
+{
+    <table class="table table-info">
+        <tr>
+            <td>Name</td>
+            <td>Link</td>
+        </tr>
+        @foreach (var report in Model.Reports)
+        {
+            <tr>
+                <td>
+                    @report.Name
+                </td>
+                <td>
+                    <a href="@report.URL">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p class="text-info">
+        No data was retrieved! Check information.
+    </p>
+}
