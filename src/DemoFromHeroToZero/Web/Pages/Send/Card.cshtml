@@ -17,7 +17,7 @@
 
 <p>Enter details below and upload pic, if already not in the list. Press preview button to see the result.</p>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data" >
     <div class="form-group">
         <label for="subjectName">Subject</label>
         <input asp-for="CardModel.Subject"

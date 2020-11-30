@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Web.Interfaces;
 using Web.Models;
+using Web.Options;
 
 namespace Web.Services
 {
@@ -12,10 +14,12 @@ namespace Web.Services
     {
         private readonly ILogger<CardSenderService> logger;
         private readonly IStorageWorker storageWorker;
+        private readonly StorageOptions options;
 
-        public CardSenderService(ILogger<CardSenderService> logger, IStorageWorker storageWorker)
+        public CardSenderService(ILogger<CardSenderService> logger, IStorageWorker storageWorker, IOptions<StorageOptions> optionsValue)
         {
             this.logger = logger;
+            options = optionsValue.Value;
             this.storageWorker = storageWorker;
         }
 
@@ -26,7 +30,7 @@ namespace Web.Services
 
             try
             {
-                await storageWorker.UploadFileAsync(nameOfCard, ms);
+                await storageWorker.UploadFileAsync(nameOfCard, ms, options.Container);
             }
             catch (Exception e)
             {

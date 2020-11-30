@@ -4,5 +4,6 @@ namespace Web.Options
     {
         public string ConnectionString { get; set; }
         public string Container { get; set; }
+        public string CardsContainer { get; set; }
     }
 }
