@@ -9,7 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Web.Hubs;
+using Web.Interfaces;
 using Web.Options;
+using Web.Services;
 
 namespace Web
 {
@@ -22,7 +25,12 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<StorageOptions>(Configuration.GetSection("StorageOptions"));
-            
+
+            services.AddScoped<ICardSenderService, CardSenderService>();
+            var storageSettings = Configuration.GetSection("StorageOptions").Get<StorageOptions>();
+            services.AddScoped<IStorageWorker, AzureStorageWorker>(_ =>
+                new AzureStorageWorker(storageSettings.ConnectionString, storageSettings.Container));
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddResponseCompression(options => options.Providers.Add<GzipCompressionProvider>());
@@ -30,14 +38,20 @@ namespace Web
                 compressionOptions.Level = CompressionLevel.Optimal);
 
             services.AddHttpContextAccessor();
-            
+
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
             services.AddControllersWithViews().AddMicrosoftIdentityUI();
-            
+
+            services.AddApplicationInsightsTelemetry();
+
+            services.AddSignalR().AddAzureSignalR();
+
             services.AddRazorPages().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AddPageRoute("/Info/Index", "");
             });
+
+            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,6 +72,8 @@ namespace Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
+                endpoints.MapHub<AlertHub>("/alerts");
             });
         }
     }

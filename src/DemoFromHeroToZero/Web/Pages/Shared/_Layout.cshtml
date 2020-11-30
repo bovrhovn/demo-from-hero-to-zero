@@ -9,6 +9,10 @@
           rel="stylesheet"/>
     <link href="~/css/site.css"
           rel="stylesheet"/>
+    <link href="~/css/toastr.css"
+          rel="stylesheet"/>
+    <script data-auto-replace-svg="nest"
+            src="https://use.fontawesome.com/releases/v5.15.1/js/all.js"></script>
 </head>
 <body>
 <header>
@@ -37,13 +41,23 @@
                             Send card
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a asp-area=""
-                           asp-page="/Index"
-                           class="nav-link text-dark">
-                            Check reports
-                        </a>
-                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a asp-area=""
+                               asp-page="/Info/Report"
+                               class="nav-link text-dark">
+                                Check reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-area=""
+                               asp-page="/Info/Search"
+                               class="nav-link text-dark">
+                                Search through cards
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
@@ -70,7 +84,40 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script asp-append-version="true"
         src="~/js/site.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="~/js/signalr.min.js"
+        type="text/javascript"></script>
+<script type="application/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+         const connectionAlerts = new signalR.HubConnectionBuilder()
+                     .withUrl('/alerts')
+                     .build();
+         bindConnectionMessage(connectionAlerts);
+         connectionAlerts.start()
+                        .then(() => console.log('connected to alert messages!'))
+                        .catch(console.error);
+         function bindConnectionMessage(connection) {
+             let messageCallback = function (message) {
+                 $("#alertDiv").empty();
+                 if (!message) return;
+                 // This is a tiny warning glyph next to Login link
+                 let messageBox = document.getElementById('alertDiv');
+                 messageBox.innerHTML = `<a href="${message}"><i class="fas fa-exclamation-triangle"></i></a>`;
+                 toastr.options = {
+                     closeButton: true,
+                     timeOut: 0,
+                     extendedTimeOut: 0,
+                     progressBar: true,
+                     onclick: function() { window.open(message, "_blank") }
+                 };
+                 toastr.warning(
+                     '<img src="images/bottle-shadow.png" height="300"  alt="alert"/>' +
+                     '<div class="message-body">Something important has happened!<br><br>Click me to find more!</div>');
+             };
+             connection.on('alertMessage', messageCallback);
+         }
+     });
+</script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>

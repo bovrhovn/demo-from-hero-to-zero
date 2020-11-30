@@ -8,5 +8,8 @@
         <PackageReference Include="Microsoft.Identity.Web" Version="1.2.0" />
         <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.2.0" />
         <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.2.0" />
+        <PackageReference Include="Microsoft.Azure.EventGrid" Version="3.2.0" />
+        <PackageReference Include="Microsoft.Azure.SignalR" Version="1.5.1" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     </ItemGroup>   
 </Project>

@@ -1,6 +1,6 @@
 namespace Web.Models
 {
-    public class SendCardViewModel
+    public class SendCardModel
     {
         public string FullName { get; set; }
         public string Subject { get; set; }

@@ -5,6 +5,12 @@
     ViewData["Title"] = "Send cards";
 }
 
+@if (string.IsNullOrEmpty(Model.InfoText))
+{
+    <p class="alert-info mb-3">
+        @Model.InfoText
+    </p>
+}
 <h1>
     Send cards
 </h1>
@@ -14,29 +20,33 @@
 <form method="post">
     <div class="form-group">
         <label for="subjectName">Subject</label>
-        <input asp-for="CardViewModel.Subject"
+        <input asp-for="CardModel.Subject"
                class="form-control"
                id="subjectName"
                type="text">
     </div>
     <div class="form-group">
         <label for="podName">Whom to send</label>
-        <input asp-for="CardViewModel.FullName"
+        <input asp-for="CardModel.FullName"
                class="form-control"
                id="podName"
                type="text">
     </div>
-@*     <div class="form-group"> *@
-@*         <label for="sizeCombo">Select image to deploy to pod</label> *@
-@*         <select class="form-control" *@
-@*                 id="sizeCombo" *@
-@*                 name="image"> *@
-@*             @foreach (var listItem in Model.Images) *@
-@*             { *@
-@*                 <option value="@listItem.Name">@listItem.Name</option> *@
-@*             } *@
-@*         </select> *@
-@*     </div> *@
+    <div class="form-group">
+        <label for="uploadImage">Select image to send</label>
+        <input class="form-control-file"
+               id="uploadImage"
+               name="image"
+               type="file">
+    </div>
+    <div class="form-group">
+        <label asp-for="CardModel.DedicationText">Dedication (press button to the right to enter random quote)</label>
+        <textarea class="form-control" asp-for="CardModel.DedicationText" rows="3"></textarea>
+        &nbsp;
+        <span id="selectQuote">
+            <i class="fas fa-th-list"></i>
+        </span>
+    </div>
     <button class="btn btn-primary"
             type="submit">
         Send card

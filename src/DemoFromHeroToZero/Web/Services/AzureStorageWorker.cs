@@ -59,7 +59,31 @@ namespace Web.Services
 
                 if (data == null) return false;
                 
-                //data.Position = 0; // set the pointer to start
+                data.Position = 0; // set the pointer to start
+                await blockBlob.UploadFromStreamAsync(data).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> UploadFileAsync(string name, Stream data, string placeholder)
+        {
+            try
+            {
+                var blobClient = storageAccount.CreateCloudBlobClient();
+
+                var container = blobClient.GetContainerReference(placeholder);
+
+                var blockBlob = container.GetBlockBlobReference(name);
+
+                if (data == null) return false;
+                
+                data.Position = 0; // set the pointer to start
                 await blockBlob.UploadFromStreamAsync(data).ConfigureAwait(false);
             }
             catch (Exception e)
